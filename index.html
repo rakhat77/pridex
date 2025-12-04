@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PrideX - премиальное онлайн-казино">
+    <title>PrideX | Премиум Казино</title>
+    
+    <!-- Подготовка к бэкенду: мета-теги для CSRF и конфигурации -->
+    <meta name="csrf-token" id="csrf-token" content="">
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    
+    <!-- Иконки (Font Awesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Подготовка к React/Vue (если решим использовать) -->
+    <script type="application/json" id="app-config">
+        {
+            "apiUrl": "https://api.pridex.com/v1",
+            "socketUrl": "wss://ws.pridex.com",
+            "environment": "development"
+        }
+    </script>
+</head>
+<body>
+    <!-- Контейнер приложения -->
+    <div id="app">
+        <!-- Хедер (фиксированный вверху) -->
+        <header class="header" id="header">
+            <div class="header-container">
+                <div class="logo">
+                    <i class="fas fa-crown"></i>
+                    <h1>Pride<span class="accent">X</span></h1>
+                </div>
+                
+                <nav class="main-nav">
+                    <a href="#" class="nav-link active" data-page="home">
+                        <i class="fas fa-home"></i>
+                        <span>Главная</span>
+                    </a>
+                    <a href="#" class="nav-link" data-page="games">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Игры</span>
+                    </a>
+                    <a href="#" class="nav-link" data-page="live">
+                        <i class="fas fa-broadcast-tower"></i>
+                        <span>Live</span>
+                    </a>
+                    <a href="#" class="nav-link" data-page="promotions">
+                        <i class="fas fa-gift"></i>
+                        <span>Акции</span>
+                    </a>
+                </nav>
+                
+                <div class="user-actions">
+                    <button class="btn btn-login" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Войти</span>
+                    </button>
+                    <button class="btn btn-register" id="registerBtn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Регистрация</span>
+                    </button>
+                    
+                    <!-- Будет заполняться после авторизации -->
+                    <div class="user-profile" id="userProfile" style="display: none;">
+                        <div class="balance">
+                            <span class="balance-amount">0.00</span>
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Основной контент с сайдбаром -->
+        <div class="main-layout">
+            <!-- Сайдбар (слева) -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-fire"></i> Горячие игры</h3>
+                </div>
+                
+                <div class="game-list">
+                    <div class="game-item" data-game="slots">
+                        <i class="fas fa-dice"></i>
+                        <span>Слоты</span>
+                        <span class="badge hot">HOT</span>
+                    </div>
+                    <div class="game-item" data-game="roulette">
+                        <i class="fas fa-chess-board"></i>
+                        <span>Рулетка</span>
+                    </div>
+                    <div class="game-item" data-game="blackjack">
+                        <i class="fas fa-club"></i>
+                        <span>Блэкджек</span>
+                    </div>
+                    <div class="game-item" data-game="poker">
+                        <i class="fas fa-spade"></i>
+                        <span>Покер</span>
+                    </div>
+                    <div class="game-item" data-game="crash">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Crash</span>
+                        <span class="badge new">NEW</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-footer">
+                    <div class="online-users">
+                        <i class="fas fa-users"></i>
+                        <span>Онлайн: <span id="onlineCount">1,234</span></span>
+                    </div>
+                    <div class="jackpot">
+                        <i class="fas fa-trophy"></i>
+                        <span>Джекпот: <span id="jackpotAmount">$2,456,789</span></span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Основной экран (посередине) -->
+            <main class="main-content" id="mainContent">
+                <!-- Динамический контент будет загружаться здесь -->
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-content">
+                        <h2 class="welcome-title">Добро пожаловать в <span class="accent">PrideX</span></h2>
+                        <p class="welcome-subtitle">Премиальное казино с честной игрой</p>
+                        
+                        <div class="featured-games">
+                            <div class="game-card" data-game="slots">
+                                <div class="game-image">
+                                    <div class="gradient-overlay"></div>
+                                    <i class="fas fa-dice"></i>
+                                </div>
+                                <h3>Слоты</h3>
+                                <button class="btn-play">Играть</button>
+                            </div>
+                            
+                            <div class="game-card" data-game="roulette">
+                                <div class="game-image">
+                                    <div class="gradient-overlay"></div>
+                                    <i class="fas fa-chess-board"></i>
+                                </div>
+                                <h3>Рулетка</h3>
+                                <button class="btn-play">Играть</button>
+                            </div>
+                            
+                            <div class="game-card" data-game="crash">
+                                <div class="game-image">
+                                    <div class="gradient-overlay"></div>
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h3>Crash</h3>
+                                <button class="btn-play">Играть</button>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-shield-alt"></i>
+                                <h4>100% Безопасно</h4>
+                                <p>Лицензировано и защищено</p>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-bolt"></i>
+                                <h4>Мгновенные выплаты</h4>
+                                <p>Вывод за 5 минут</p>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-star"></i>
+                                <h4>Премиум поддержка</h4>
+                                <p>24/7 в онлайн-чате</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Контейнер для динамической загрузки игр -->
+                <div class="game-container" id="gameContainer" style="display: none;"></div>
+            </main>
+        </div>
+
+        <!-- Футер (в конце страницы) -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <i class="fas fa-crown"></i>
+                        <h3>Pride<span class="accent">X</span></h3>
+                    </div>
+                    <p>© 2024 PrideX Casino. Все права защищены.</p>
+                    <p>Играйте ответственно. 18+</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Поддержка</h4>
+                    <a href="#"><i class="fas fa-question-circle"></i> FAQ</a>
+                    <a href="#"><i class="fas fa-headset"></i> Чат</a>
+                    <a href="#"><i class="fas fa-envelope"></i> Контакты</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Правовая информация</h4>
+                    <a href="#"><i class="fas fa-file-contract"></i> Условия</a>
+                    <a href="#"><i class="fas fa-lock"></i> Конфиденциальность</a>
+                    <a href="#"><i class="fas fa-balance-scale"></i> Ответственная игра</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Принимаем</h4>
+                    <div class="payment-methods">
+                        <i class="fab fa-cc-visa"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fab fa-bitcoin"></i>
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>Лицензия №: Curaçao eGaming 1668/JAZ</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Модальные окна -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Вход в аккаунт</h2>
+            <form id="loginForm">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Пароль" required>
+                <button type="submit" class="btn-submit">Войти</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <input type="email" placeholder="Email" required>
+                <input type="text" placeholder="Имя пользователя" required>
+                <input type="password" placeholder="Пароль" required>
+                <input type="password" placeholder="Подтвердите пароль" required>
+                <button type="submit" class="btn-submit">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="js/ui.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/games.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Подготовка к WebSocket соединению для реального времени -->
+    <script>
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загружаем конфигурацию
+            const config = JSON.parse(document.getElementById('app-config').textContent);
+            
+            // Инициализируем приложение
+            if (typeof App !== 'undefined') {
+                App.init(config);
+            }
+            
+            // Для отладки
+            console.log('PrideX Casino initialized in', config.environment, 'mode');
+        });
+    </script>
+</body>
+</html>
